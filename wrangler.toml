@@ -1,0 +1,19 @@
+name = "event-pro-casablanca"
+compatibility_date = "2025-05-01"
+pages_build_output_dir = "dist"
+
+[vars]
+ENVIRONMENT = "production"
+DEFAULT_LOCALE = "fr"
+DEFAULT_CURRENCY = "MAD"
+TIMEZONE = "Africa/Casablanca"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "event_pro_db"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+migrations_dir = "migrations"
+
+[[r2_buckets]]
+binding = "R2_BUCKET"
+bucket_name = "event-pro-media"

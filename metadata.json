@@ -1,0 +1,6 @@
+{
+  "name": "EVENT PRO",
+  "description": "Agence d'organisation d'événements, mariages, cérémonies marocaines et événements professionnels à Casablanca, Maroc.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
