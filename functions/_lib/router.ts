@@ -12,6 +12,13 @@ import {
   verifyToken,
   verifyTurnstile,
 } from './security.ts';
+import {
+  INITIAL_CATEGORIES,
+  INITIAL_GALLERY,
+  INITIAL_SERVICES,
+  INITIAL_SETTINGS,
+  INITIAL_TESTIMONIALS,
+} from './seedData.ts';
 import type { AuthTokenPayload, Env } from './types.ts';
 
 function json(data: unknown, status = 200, extraHeaders: Record<string, string> = {}): Response {
@@ -79,11 +86,26 @@ export async function handleApiRequest(request: Request, env: Env): Promise<Resp
   }
 
   if (method === 'GET' && path === '/api/health') {
-    return json({ ok: true, timezone: 'Africa/Casablanca', currency: 'MAD' });
+    return json({
+      ok: true,
+      databaseConfigured: Boolean(env.DB),
+      timezone: 'Africa/Casablanca',
+      currency: 'MAD',
+    });
   }
 
   // Public bootstrap data
   if (method === 'GET' && path === '/api/public/bootstrap') {
+    if (!env.DB) {
+      return json({
+        settings: INITIAL_SETTINGS,
+        categories: INITIAL_CATEGORIES,
+        services: INITIAL_SERVICES,
+        gallery: INITIAL_GALLERY,
+        testimonials: INITIAL_TESTIMONIALS,
+      });
+    }
+
     const [settings, categoriesRes, servicesRes, galleryRes, testimonialsRes] = await Promise.all([
       env.DB.prepare('SELECT * FROM company_settings WHERE id = ?').bind('default').first(),
       env.DB.prepare('SELECT * FROM service_categories WHERE is_active = 1 ORDER BY display_order ASC').all(),
@@ -93,12 +115,22 @@ export async function handleApiRequest(request: Request, env: Env): Promise<Resp
     ]);
 
     return json({
-      settings: settings || {},
+      settings: settings || INITIAL_SETTINGS,
       categories: categoriesRes.results || [],
       services: servicesRes.results || [],
       gallery: galleryRes.results || [],
       testimonials: testimonialsRes.results || [],
     });
+  }
+
+  if (!env.DB) {
+    return json(
+      {
+        error:
+          'Base de données Cloudflare D1 non encore liée à ce Worker. Ajoutez le binding "DB" dans Cloudflare Dashboard → Workers → Settings → Bindings.',
+      },
+      503
+    );
   }
 
   // Public booking submission (always starts as 'Nouvelle demande', never auto-confirmed)

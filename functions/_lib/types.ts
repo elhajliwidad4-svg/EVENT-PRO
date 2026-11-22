@@ -28,7 +28,7 @@ export interface R2BucketLike {
 }
 
 export interface Env {
-  DB: D1DatabaseLike;
+  DB?: D1DatabaseLike;
   R2_BUCKET?: R2BucketLike;
   SESSION_SECRET?: string;
   ADMIN_BOOTSTRAP_PASSCODE?: string;

@@ -88,14 +88,15 @@ Dans le tableau de bord Cloudflare Pages (**Settings → Environment variables**
 - `TURNSTILE_SECRET_KEY` *(clé secrète Cloudflare Turnstile pour valider les formulaires côté serveur)*.
 - `VITE_TURNSTILE_SITE_KEY` *(clé publique du site Turnstile, injectée au build Vite)*.
 
-### 7. Connecter Cloudflare Pages à GitHub
+### 7. Connecter Cloudflare Workers & Pages à GitHub
 
 1. Poussez ce dépôt sur GitHub.
-2. Dans **Cloudflare Dashboard → Workers & Pages → Create → Pages → Connect to Git**.
-3. Sélectionnez votre dépôt et configurez :
-   - **Build command** : `npm run build`
-   - **Build output directory** : `dist`
-4. Dans **Settings → Functions → Bindings**, vérifiez la liaison :
+2. Dans **Cloudflare Dashboard → Workers & Pages → Create → Import a repository**.
+3. Conservez la configuration détectée :
+   - **Build command** : `npm run build` (ou `bun run build`)
+   - **Deploy command** : `npx wrangler deploy`
+4. Le point d’entrée `worker.ts` et `wrangler.toml` (`[assets] directory = "./dist"`) déploient automatiquement le site React et les routes `/api/*`.
+5. Dans **Worker → Settings → Bindings**, liez vos ressources lorsque vous êtes prêt :
    - D1 Database : variable `DB` → `event_pro_db`
    - R2 Bucket : variable `R2_BUCKET` → `event-pro-media`
 
@@ -105,7 +106,7 @@ Chaque push sur la branche principale déclenche le déploiement automatique, ou
 
 ```bash
 npm run build
-npx wrangler pages deploy dist
+npx wrangler deploy
 ```
 
 ### 9. Configurer un domaine personnalisé
